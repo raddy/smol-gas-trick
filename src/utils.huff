@@ -1,0 +1,51 @@
+
+/// Stolen from huffmate, m8
+/// @notice Sends an amount of ether to the specified [amount, address]
+#define macro SEND_ETH() = takes (2) returns (1) {
+    // Input Stack: [amount, address]
+
+    // Send the ether
+    0x00    // [0, amount, address]
+    dup1    // [0, 0, amount, address]
+    dup1    // [0, 0, 0, amount, address]
+    dup1    // [0, 0, 0, 0, amount, address]
+    dup5    // [amount, 0, 0, 0, 0, amount, address]
+    dup7    // [address, amount, 0, 0, 0, 0, amount]
+    gas     // [gas, address, amount, 0, 0, 0, 0, amount, address]
+    call    // [success, amount, address]
+
+    // Clean the stack
+    swap2   // [address, amount, success]
+    pop     // [amount, success]
+    pop     // [success]
+}
+
+/// Stolen from huffmate, m8
+/// @notice Calls a contract with the given arguments
+/// @notice Returns the success of the call
+/// @notice Returndata is left in memory for the caller to handle
+/// @param ret_size The size of the return data
+/// @param ret_offset The offset in memory to store the return data
+/// @param arg_size The size of the arguments
+/// @param arg_offset The offset in memory of the arguments
+/// @param value The value to send with the call
+/// @param to The address to call
+/// @param gas The amount of gas to send with the call
+#define macro CALL(
+    ret_size,
+    ret_offset,
+    arg_size,
+    arg_offset,
+    value,
+    to,
+    maxgas
+) = takes (0) returns (1) {
+    <ret_size>              // [retSize]
+    <ret_offset>            // [retOffset, retSize]
+    <arg_size>              // [argSize, retOffset, retSize]
+    <arg_offset>            // [argOffset, argSize, retOffset, retSize]
+    <value>                 // [value, argOffset, argSize, retOffset, retSize]
+    <to>                    // [to, value, argOffset, argSize, retOffset, retSize]
+    <maxgas>                // [gas, to, value, argOffset, argSize, retOffset, retSize]
+    call                    // [success]
+}
